@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share Code | VarShade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style-code.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="index.html" class="navbar-logo">VarShade</a>
+      <div class="navbar-menu" id="navbarMenu">
+        <a href="index.html" class="navbar-link"><i class="fas fa-home"></i> Home</a>
+        <a href="projects.html" class="navbar-link"><i class="fas fa-project-diagram"></i> Projects</a>
+        <a href="share-code.html" class="navbar-link active"><i class="fas fa-code"></i> Share Code</a>
+      </div>
+      <div class="navbar-controls">
+        <button id="themeToggle" class="navbar-icon" aria-label="Toggle theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button id="menuToggle" class="navbar-icon mobile-only" aria-label="Toggle menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="code-header">
+      <h1 class="page-title">VarShade - Share Code!</h1>
+      <div class="search-container">
+        <input type="text" id="codeSearch" placeholder="Search Case..." class="search-input">
+        <button class="search-btn"><i class="fas fa-search"></i></button>
+      </div>
+    </div>
+    
+    <div class="code-container">
+      <!-- JavaScript Example -->
+            <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">quote-chat.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+  case 'qc': {
+  let teks = text || m.quoted?.text;
+  if (!teks) return m.reply('❌ Masukkan teks atau reply ke pesan.');
+
+  await m.react('⏱️')
+
+  try {
+    let url = `https://zenz.biz.id/maker/quotedchat?text=${encodeURIComponent(teks)}`;
+    let res = await fetch(url);
+    if (!res.ok) throw 'Gagal ambil gambar QC.';
+    let buffer = await res.buffer();
+
+    await VarShade.imgToSticker(m.chat, buffer, m, {
+      packname: packname,
+      author: author
+    });
+
+  } catch (err) {
+    console.error('❌ QC2 Error:', err);
+    m.reply('❌ Gagal membuat sticker quoted chat.');
+  }
+}
+break
+        </code></pre>
+      </div>
+       <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">ytmp4.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+case 'ytmp4': {
+  if (!text) return m.reply('Masukkan URL YouTube-nya!\n\nContoh: .ytmp4 https://youtube.com/watch?v=xxxx 360p')
+
+  let [url, quality] = text.split(' ')
+  quality = quality || '480p'
+
+  const qualityMap = {
+    '1080p': 'Full HD (1080p)',
+    '720p': 'HD (720p)',
+    '480p': 'SD (480p)',
+    '360p': 'Low (360p)',
+    '240p': 'Very Low (240p)',
+    '144p': 'Tiny (144p)'
+  }
+
+  if (!qualityMap[quality]) return m.reply(`Kualitas tidak valid!\n\nGunakan salah satu dari:\n${Object.keys(qualityMap).join(', ')}`)
+
+  try {
+    let { data } = await axios.post('https://api.ytmp4.fit/api/video-info', { url }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': 'https://ytmp4.fit',
+        'Referer': 'https://ytmp4.fit/'
+      }
+    })
+
+    if (!data || !data.title) throw new Error('Gagal mengambil info video.')
+
+    let { title, duration, channel, views, thumbnail } = data
+
+    await VarShade.sendMessage(m.chat, {
+      text: `🎬 *Info Video YouTube:*\n\n📌 Judul: ${title}\n📺 Channel: ${channel}\n⏱ Durasi: ${duration}\n👁 Views: ${views}\n\n⏳ Mengunduh kualitas *${qualityMap[quality]}*...`,
+      contextInfo: {
+        externalAdReply: {
+          title: title,
+          body: channel,
+          thumbnailUrl: thumbnail,
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          sourceUrl: url
+        }
+      }
+    }, { quoted: m })
+
+    let videoRes = await axios.post('https://api.ytmp4.fit/api/download', { url, quality }, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/octet-stream',
+        'Origin': 'https://ytmp4.fit',
+        'Referer': 'https://ytmp4.fit/',
+      }
+    })
+
+    if (!videoRes.headers['content-type'].includes('video')) {
+      throw new Error('Gagal mengunduh video.')
+    }
+
+    let filename = decodeURIComponent(
+      (videoRes.headers['content-disposition'] || '').split("filename*=UTF-8''")[1] || `video_${quality}.mp4`
+    ).replace(/[\/\\:*?"<>|]/g, '_')
+
+    await VarShade.sendMessage(m.chat, {
+      video: Buffer.from(videoRes.data),
+      mimetype: 'video/mp4',
+      fileName: filename,
+      caption: `✅ *Berhasil mengunduh video!*\n\n📌 Judul: ${title}\n🎞️ Kualitas: ${qualityMap[quality]}\n\nPowered By ${botname}`
+    }, { quoted: m })
+
+  } catch (err) {
+    m.reply(`❌ Error: ${err.message}`)
+  }
+}
+break
+        </code></pre>
+      </div>
+      <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">pinterestdl.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+case 'pindl':
+case 'pinterestdl': {
+  if (!text) return m.reply('❌ Masukkan URL Pinterest!\nContoh: .pinterestdl https://pin.it/2NCffxXoN');
+
+  try {
+    await VarShade.sendMessage(m.chat, {
+      react: { text: '⏰', key: m.key }
+    });
+
+    const res = await fetch(`https://api.nekorinn.my.id/downloader/pinterest?url=${encodeURIComponent(text)}`);
+    const data = await res.json();
+
+    if (!data.status || !data.result || !data.result.medias?.length) {
+      return m.reply('❌ Tidak ditemukan media pada link tersebut.');
+    }
+
+    const media = data.result.medias.find(m => m.extension === 'mp4') ||
+                  data.result.medias.find(m => m.extension === 'jpg');
+
+    if (!media) return m.reply('❌ Tidak ditemukan media yang dapat dikirim.');
+
+    const caption = `📌 *Pinterest Downloader*\n\n🎞️ *Judul:* ${data.result.title}\n💾 *Ukuran:* ${media.formattedSize || '-'}\n📎 *Sumber:* ${text}`;
+    const type = media.extension === 'mp4' ? 'video' : 'image';
+
+    await VarShade.sendMessage(m.chat, {
+      [type]: { url: media.url },
+      caption
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error('PinterestDL Error:', err);
+    m.reply('❌ Terjadi kesalahan saat mengambil media Pinterest.');
+  }
+}
+break
+        </code></pre>
+      </div>
+      <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">irengkan.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+case 'ireng':
+case 'irengkan': {
+ if (!m.quoted || m.quoted.mtype !== 'imageMessage') {
+ return reply(`📌 Reply gambar dengan perintah:\n${prefix + command} Hitam`);
+ }
+
+ const filter = (args[0] || 'hitam').toLowerCase();
+ const FILTERS = ['coklat', 'hitam', 'nerd', 'piggy', 'carbon', 'botak'];
+
+ if (!FILTERS.includes(filter)) {
+ return reply(`❌ Filter tidak tersedia!\n\nFilter tersedia:\n${FILTERS.map(v => `• ${v}`).join('\n')}`);
+ }
+
+ try {
+ const quotedImg = await m.quoted.download();
+ const base64Input = quotedImg.toString('base64');
+
+ const { data } = await axios.post('https://wpw.my.id/api/process-image', {
+ imageData: base64Input,
+ filter: filter
+ }, {
+ headers: {
+ 'Content-Type': 'application/json',
+ 'Origin': 'https://wpw.my.id',
+ 'Referer': 'https://wpw.my.id/',
+ }
+ });
+
+ const dataUrl = data?.processedImageUrl;
+ if (!dataUrl?.startsWith('data:image/')) return reply('❌ Gagal memproses gambar.');
+
+ const imgBuffer = Buffer.from(dataUrl.split(',')[1], 'base64');
+
+ await RaidenSG.sendMessage(m.chat, {
+ image: imgBuffer,
+ caption: `✅ *Filter:* ${filter.charAt(0).toUpperCase() + filter.slice(1)}`
+ }, { quoted: nyaw });
+
+ } catch (err) {
+ console.error(err);
+ cpe('❌ Terjadi kesalahan saat memproses gambar.');
+ }
+}
+break
+        </code></pre>
+      </div>
+      
+      <!-- JavaScript Example -->
+      <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">play-ch.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+case 'playch': {
+ if (!isCreator) return mrh(mess.owner)
+ if (!text) return reply(`Contoh:\n${prefix + command} https://youtube.com/watch?v=xxx\n${prefix + command} mellow vibes`);
+
+ try {
+ reply("🚀 Proses...");
+
+ let title, author, audioUrl, thumbnail, videoUrl, duration;
+
+ if (/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(text)) {
+ const res = await axios.get(`https://fastrestapis.fasturl.cloud/downup/ytmp3?url=${encodeURIComponent(text)}&quality=128kbps&server=auto`);
+ const result = res.data?.result;
+ if (!result?.media) return reply("❌ Gagal ambil audio dari URL.");
+
+ title = result.title;
+ author = result.author?.name || 'Unknown';
+ thumbnail = result.metadata?.thumbnail;
+ duration = result.metadata?.duration;
+ videoUrl = result.url;
+ audioUrl = result.media;
+
+ } else {
+ const search = await axios.get(`https://api.kimkiro.my.id/search/youtube?q=${encodeURIComponent(text)}`);
+ const list = search.data.result;
+ if (!list?.length) return reply("❌ Video tidak ditemukan.");
+
+ const video = list[0];
+ const res = await axios.get(`https://fastrestapis.fasturl.cloud/downup/ytmp3?url=${encodeURIComponent(video.link)}&quality=128kbps&server=auto`);
+ const result = res.data?.result;
+ if (!result?.media) return reply("❌ Gagal ambil audio dari hasil pencarian.");
+
+ title = result.title;
+ author = result.author?.name || video.channel || 'Unknown';
+ thumbnail = result.metadata?.thumbnail || video.imageUrl;
+ duration = result.metadata?.duration || video.duration;
+ videoUrl = result.url || video.link;
+ audioUrl = result.media;
+ }
+
+ const channelId = global.idsaluran;
+ const contextInfo = {
+ forwardingScore: 1,
+ isForwarded: true,
+ forwardedNewsletterMessageInfo: {
+ newsletterJid: channelId,
+ serverMessageId: null,
+ newsletterName: fake2
+ },
+ externalAdReply: {
+ title,
+ body: author,
+ thumbnailUrl: thumbnail || global.thumb,
+ mediaType: 1,
+ sourceUrl: '',
+ renderLargerThumbnail: false
+ }
+ };
+
+ const audioRes = await axios.get(audioUrl, { responseType: "arraybuffer" });
+ const audioBuffer = Buffer.from(audioRes.data, "binary");
+
+ await RaidenSG.sendMessage(channelId, {
+ audio: audioBuffer,
+ mimetype: "audio/mp4",
+ ptt: true,
+ contextInfo
+ });
+
+ reply(`✔ Sukses kirim *${title}* ke channel.`);
+
+ } catch (err) {
+ console.error("❌ Gagal PlayCH:", err);
+ reply("❌ Gagal kirim audio ke channel.\n\nError: " + (err?.message || 'Tidak diketahui'));
+ }
+}
+break
+</code></pre>
+      </div>
+      
+      <!-- Python Example -->
+      <div class="code-file">
+        <div class="file-header">
+          <span class="file-name">random-blue-arhive.js</span>
+          <button class="copy-btn"><i class="far fa-copy"></i> Copy</button>
+        </div>
+        <pre><code class="language-javascript">
+case 'randombluearchive':
+case 'randomimage': {
+ await VarShads.sendMessage(m.chat, {
+  react: { text: '⏰', key: m.key }
+});
+  try {
+    const jumlahGambar = 8;
+    let picked = [];
+
+    // Ambil beberapa gambar dari API (loop)
+    for (let i = 0; i < jumlahGambar; i++) {
+      let res = await fetch('https://api.siputzx.my.id/api/r/blue-archive');
+      let buffer = await res.buffer();
+      picked.push({ buffer, directLink: 'https://bluearchive.jp' }); // static link
+    }
+
+    const carouselCards = await Promise.all(picked.map(async (item, index) => ({
+      header: {
+        title: `🎀 ʙʟᴜᴇ ᴀʀᴄʜɪᴠᴇ ${index + 1}`,
+        hasMediaAttachment: true,
+        imageMessage: (await generateWAMessageContent({
+          image: item.buffer
+        }, {
+          upload: VarShade.waUploadToServer
+        })).imageMessage
+      },
+      body: {
+        text: `🖼️ ᴡᴀɪғᴜ ʀᴀɴᴅᴏᴍ ᴋᴇ - ${index + 1}`
+      },
+      footer: {
+        text: "🔹 ɢᴇsᴇʀ ᴜɴᴛᴜᴋ ʟɪʜᴀᴛ ʟᴀɪɴɴʏᴀ"
+      },
+      nativeFlowMessage: {
+        buttons: [
+          {
+            name: "cta_url",
+            buttonParamsJson: JSON.stringify({
+              display_text: "🌐 ʙᴜᴋᴀ sɪᴛᴜs",
+              url: item.directLink
+            })
+          }
+        ]
+      }
+    })));
+
+    const carouselMessage = generateWAMessageFromContent(m.chat, {
+      viewOnceMessage: {
+        message: {
+          interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+            body: {
+              text: `🎀 ᴡᴀɪғᴜ ʀᴀɴᴅᴏᴍ ʙʟᴜᴇ ᴀʀᴄʜɪᴠᴇ`
+            },
+            footer: {
+              text: `📂 Gambar Ke: ${jumlahGambar}`
+            },
+            carouselMessage: {
+              cards: carouselCards
+            }
+          })
+        }
+      }
+    }, {
+      quoted: m
+    });
+
+    await VarShade.relayMessage(m.chat, carouselMessage.message, {
+      messageId: carouselMessage.key.id
+    });
+
+  } catch (err) {
+    console.error('Blue Archive random image error:', err);
+    m.reply('❌ Gagal memuat waifu!');
+  }
+}
+break
+        </code></pre>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://wa.me/6283891813151" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.instagram.com/fardannfm" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://t.me/FarXyz_ID" target="_blank"><i class="fab fa-telegram"></i></a>
+    </div>
+    <p>&copy; 2025 VarShade. All rights reserved.</p>
+  </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="js/code.js"></script>
+</body>
+</html>
