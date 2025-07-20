@@ -1,0 +1,128 @@
+code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .search-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.6rem 1rem;
+      border-radius: 30px;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      min-width: 250px;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+    }
+    
+    .search-btn {
+      background: var(--accent);
+      color: var(--button-text);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .code-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .code-file {
+      background: rgba(255,255,255,0.05);
+      border-radius: 0.8rem;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .code-file:hover {
+      border-color: var(--accent);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .file-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .file-name {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+    
+    .copy-btn {
+      background: rgba(100, 255, 218, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .copy-btn:hover {
+      background: rgba(100, 255, 218, 0.2);
+    }
+    
+    pre {
+      margin: 0;
+      background: rgba(0,0,0,0.2) !important;
+      border-radius: 0 !important;
+    }
+    
+    code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      display: block;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+    
+    @media (max-width: 768px) {
+      .code-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .search-container {
+        width: 100%;
+      }
+      
+      .search-input {
+        flex-grow: 1;
+      }
+    }

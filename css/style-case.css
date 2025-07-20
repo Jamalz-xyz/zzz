@@ -1,0 +1,120 @@
+  .search-container {
+      position: relative;
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .search-box {
+      padding: 12px 20px 12px 45px;
+      width: 100%;
+      border-radius: 25px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg2);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+    
+    .search-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.25);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--subtext);
+    }
+    
+    .project-card.highlight {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+      transform: translateY(-3px);
+    }
+    
+    .projects-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: var(--subtext);
+      display: none;
+    }
+    
+    .category-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      gap: 10px;
+    }
+    
+    .category-tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--subtext);
+      background: transparent;
+      border: none;
+    }
+    
+    .category-tab.active {
+      color: var(--accent);
+      background: rgba(100, 255, 218, 0.1);
+      border-bottom: 3px solid var(--accent);
+    }
+    
+    .category-tab i {
+      font-size: 1.1em;
+    }
+    
+    .category-content {
+      display: none;
+    }
+    
+    .category-content.active {
+      display: block;
+    }
+    
+    .case-title {
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    
+    .project-card {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .project-card .case-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--accent);
+      color: var(--button-text);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
